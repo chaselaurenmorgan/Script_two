@@ -19,7 +19,6 @@ wait.until { driver.find_element(:id => "TTFB") }
   driver.find_element(:id, 'TTFB').text
 
   puts driver.find_element(:id, "LoadTime").text
-  #puts driver.find_element(:id, "TTFB").text
 
   load_time = driver.find_element(:id, "LoadTime").text
   time_to_first_byte = driver.find_element(:id, "TTFB").text

@@ -1,3 +1,1 @@
-f = File.open('urls.txt')
-a = f.readlines
-puts a.class
+#Working on Second script
