@@ -1,64 +1,62 @@
 require 'selenium-webdriver'
 require 'gmail'
-
+require 'pry'
 
 @urls = []
-File.each("urls.txt").with_index do |line, line_num|
+@email_body = " "
+@email_data = []
+inFile = File.open("urls.txt")
 
-  @urls = line.to_s.chomp
-  @line_num = line_num.to_i
-  begin @urls
-   puts "#{@line_num}: #{@urls}"
 
+while line = inFile.gets
+  @urls << line.to_s.chomp
 end
 
-driver = Selenium::WebDriver.for :chrome
-@email_body = " "
+
+for test_urls in @urls
+  driver = Selenium:: WebDriver.for :chrome
+  driver.navigate.to "https://www.webpagetest.org/"
+  driver.find_element(:id, "url").send_keys("#{test_urls}")
+  driver.find_element(:class, "start_test").click
+
+  wait = Selenium::WebDriver::Wait.new(:timeout => 80)
+  wait.until { driver.find_element(:id => "LoadTime") }
 
 
-
-driver.navigate.to "https://www.webpagetest.org/"
-driver.find_element(:id, "url").send_keys("#{@urls}")
-driver.find_element(:class, "start_test").click
-
-
-wait = Selenium::WebDriver::Wait.new(:timeout => 80)
-wait.until { driver.find_element(:id => "LoadTime") }
-wait.until { driver.find_element(:id => "TTFB") }
-
-  driver.find_element(:id, 'LoadTime').text
-  driver.find_element(:id, 'TTFB').text
-
-  puts driver.find_element(:id, "LoadTime").text
-  puts driver.find_element(:id, 'TTFB').text
-
-  @load_time = driver.find_element(:id, "LoadTime").text
+  @load_time =  driver.find_element(:id, "LoadTime").text
   @time_to_first_byte = driver.find_element(:id, "TTFB").text
 
-@email_body = "Values are #{@time_to_first_byte}(TTFB) and #{@load_time}(LoadTime)
-from the #{@urls}"
+  @email_body = "Values are #{@time_to_first_byte}(TTFB) and #{@load_time}(LoadTime)
+  from the #{test_urls}"
+  driver.quit
 
-puts @email_body += 1.to_s
+  @email_body +=@email_body[0]
+  @email_data.push(@email_body)
 
-driver.quit
 end
 
-@email_body = "Values are #{@time_to_first_byte}(TTFB) and #{@load_time}(LoadTime)
-from the #{@urls}"
+@email_body = @email_data.each
 
-@gmail = Gmail.connect('username', 'password')
+
+
+  @gmail = Gmail.connect('username', 'password')
   email = @gmail.compose do
-    to 'username@yahoo.com'
-  @line_num = 1
-    if @line_num == 1
-     subject 'Second Ruby Script!'
-      body "Here is your data:" +@email_body
-      puts ' email has been sent'
-    else
-      break
-      end
+    puts @email_body
+    to 'chasemorgan15@yahoo.com'
+    subject 'Second Script'
+    body "Here is your data #{@email_body}"
+
   end
   email.deliver!
 
 
-sleep 50
+
+
+
+
+
+
+
+
+
+
