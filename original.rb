@@ -1,10 +1,9 @@
 require 'selenium-webdriver'
 require 'gmail'
-require 'pry'
 
 @urls = []
 @email_body = " "
-@email_data = []
+
 inFile = File.open("urls.txt")
 
 
@@ -28,26 +27,25 @@ for test_urls in @urls
 
   @email_body = "Values are #{@time_to_first_byte}(TTFB) and #{@load_time}(LoadTime)
   from the #{test_urls}"
-  driver.quit
 
-  @email_body +=@email_body[0]
-  @email_data.push(@email_body)
+ @email_body +=@email_body
+
 
 end
-
-@email_body = @email_data.each
-
+puts @email_body
 
 
   @gmail = Gmail.connect('username', 'password')
   email = @gmail.compose do
     puts @email_body
-    to 'chasemorgan15@yahoo.com'
+    to 'username@yahoo.com'
     subject 'Second Script'
     body "Here is your data #{@email_body}"
 
   end
   email.deliver!
+
+driver.quit
 
 
 
