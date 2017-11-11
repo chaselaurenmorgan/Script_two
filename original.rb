@@ -1,8 +1,16 @@
 require 'selenium-webdriver'
 require 'gmail'
+require 'yaml'
+
+
+un_pw = YAML.load_file("un_pw.yaml")
+username =  un_pw[:username]
+password =  un_pw[:password]
+
+
 
 @urls = []
-@email_body = " "
+email_body = " "
 
 inFile = File.open("urls.txt")
 
@@ -25,36 +33,24 @@ for test_urls in @urls
   @load_time =  driver.find_element(:id, "LoadTime").text
   @time_to_first_byte = driver.find_element(:id, "TTFB").text
 
-  @email_body = "Values are #{@time_to_first_byte}(TTFB) and #{@load_time}(LoadTime)
+  email_body = email_body + "\n" + "Values are #{@time_to_first_byte}(TTFB) and #{@load_time}(LoadTime)
   from the #{test_urls}"
-
- @email_body +=@email_body
 
 
 end
-puts @email_body
+puts email_body
 
 
-  @gmail = Gmail.connect('username', 'password')
+  @gmail = Gmail.connect("#{username}", "#{password}")
   email = @gmail.compose do
-    puts @email_body
-    to 'username@yahoo.com'
+    to 'chasemorgan15@yahoo.com'
     subject 'Second Script'
-    body "Here is your data #{@email_body}"
+    body "Here is your data: " + email_body
+
+
 
   end
   email.deliver!
+sleep 45
 
 driver.quit
-
-
-
-
-
-
-
-
-
-
-
-
