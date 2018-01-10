@@ -1,5 +1,7 @@
 require 'selenium-webdriver'
+require 'open-uri'
 require 'gmail'
+require 'crack'
 require 'yaml'
 
 
