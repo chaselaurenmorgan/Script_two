@@ -6,8 +6,10 @@ require 'yaml'
 
 
 un_pw = YAML.load_file("un_pw.yaml")
-username =  un_pw[:username]
-password =  un_pw[:password]
+username =  un_pw["username"]
+password =  un_pw["password"]
+
+#puts "This is the username: " + username
 
 
 
@@ -22,6 +24,7 @@ while line = inFile.gets
 end
 
 
+
 for test_urls in @urls
   driver = Selenium:: WebDriver.for :chrome
   driver.navigate.to "https://www.webpagetest.org/"
@@ -30,6 +33,43 @@ for test_urls in @urls
 
   wait = Selenium::WebDriver::Wait.new(:timeout => 80)
   wait.until { driver.find_element(:id => "LoadTime") }
+
+
+
+
+#grab url 
+result_url =  driver.current_url
+#puts 'this is url ' + result_url 
+
+
+#change the url use .gsub
+ result_url.gsub!("/result/","/xmlResult/")
+ puts result_url
+ 
+ #sending request
+ xml = URI.parse(result_url)
+ xml = open(result_url).read
+
+
+#reading server response 
+xml.read
+
+#parse the response with crack 
+
+document = Crack::XML.parse(xml)['response']['statusCode']
+
+
+puts  document
+
+
+#xml_url = "https://www.webpagetest.org/xmlResult/180120_RC_42bb8809db7b1d43dfa17e83eb752e7a/"
+#sending request
+#xml = URI.parse(xml_url)
+#xml = open(xml_url).read
+
+#reading server response 
+#xml.read 
+
 
 
   @load_time =  driver.find_element(:id, "LoadTime").text
