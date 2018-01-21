@@ -9,7 +9,6 @@ un_pw = YAML.load_file("un_pw.yaml")
 username =  un_pw["username"]
 password =  un_pw["password"]
 
-#puts "This is the username: " + username
 
 
 
@@ -43,50 +42,38 @@ result_url =  driver.current_url
 
 
 #change the url use .gsub
- result_url.gsub!("/result/","/xmlResult/")
- puts result_url
- 
+ xml_result = result_url.gsub!("/result/","/xmlResult/")
+ puts  xml_result
+
  #sending request
- xml = URI.parse(result_url)
- xml = open(result_url).read
+ xml = open(xml_result).read
 
-
-#reading server response 
-xml.read
 
 #parse the response with crack 
 
-document = Crack::XML.parse(xml)['response']['statusCode']
+@document_loadtime = Crack::XML.parse(xml)['response']['data']['average']['firstView']['loadTime']
+@document_ttfb = Crack::XML.parse(xml)['response']['data']['average']['firstView']['TTFB']
 
-
-puts  document
-
-
-#xml_url = "https://www.webpagetest.org/xmlResult/180120_RC_42bb8809db7b1d43dfa17e83eb752e7a/"
-#sending request
-#xml = URI.parse(xml_url)
-#xml = open(xml_url).read
-
-#reading server response 
-#xml.read 
+#output the load time and the TTFB 
+puts @document_loadtime
+puts @document_ttfb
 
 
 
-  @load_time =  driver.find_element(:id, "LoadTime").text
-  @time_to_first_byte = driver.find_element(:id, "TTFB").text
-
-  email_body = email_body + "\n" + "Values are #{@time_to_first_byte}(TTFB) and #{@load_time}(LoadTime)
-  from the #{test_urls}"
+email_body = email_body + "\n" + "Values are #{@document_ttfb}(TTFB) and #{@document_loadtime}(LoadTime)
+from #{test_urls}"
 
 
 end
 puts email_body
 
 
+
+
   @gmail = Gmail.connect("#{username}", "#{password}")
   email = @gmail.compose do
-    to 'chasemorgan15@yahoo.com'
-    subject 'Second Script'
+    to 'joshuakempcoaching@gmail.com'
+    subject 'API Script'
     body "Here is your data: " + email_body
 
 
